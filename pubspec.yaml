@@ -1,0 +1,29 @@
+name: zego_uikit
+description: ZegoUIKit is a low-code offering with pre-built and UI-ready components, such as AudioVideoView, CameraButtons, etc. Save time and assemble features fast with ZegoUIKit.
+version: 1.7.0
+homepage: https://www.zegocloud.com/
+
+environment:
+  sdk: ">=2.16.2 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  encrypt: ^5.0.1
+  http: ^0.13.4
+  permission_handler: ^10.2.0
+  native_device_orientation: ^1.1.4
+  flutter_screenutil: ^5.5.3+2
+  wakelock: ^0.6.2
+  zego_express_engine: ^2.23.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0
+  import_sorter: ^4.6.0  # run 'flutter pub run import_sorter:main'
+
+flutter:
+  assets:
+    - assets/icons/
