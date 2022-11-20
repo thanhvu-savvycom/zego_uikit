@@ -55,6 +55,7 @@ class ZegoLeaveButton extends StatelessWidget {
       child: Container(
         width: containerSize.width,
         height: containerSize.height,
+        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
           color: icon?.backgroundColor ?? controlBarButtonCheckedBackgroundColor,
             borderRadius: BorderRadius.circular(12.r),

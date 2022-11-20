@@ -106,6 +106,7 @@ class _ZegoSwitchAudioOutputButtonState
       child: Container(
         width: containerSize.width,
         height: containerSize.height,
+        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(12.r)

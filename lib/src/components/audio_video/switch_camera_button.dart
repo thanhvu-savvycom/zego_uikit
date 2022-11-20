@@ -71,6 +71,7 @@ class _ZegoSwitchCameraButtonState extends State<ZegoSwitchCameraButton> {
           child: Container(
             width: containerSize.width,
             height: containerSize.height,
+            padding: EdgeInsets.all(16.r),
             decoration: BoxDecoration(
               color: widget.icon?.backgroundColor ??
                   controlBarButtonCheckedBackgroundColor,

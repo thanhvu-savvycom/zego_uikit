@@ -70,6 +70,7 @@ class _ZegoToggleMicrophoneButtonState
           child: Container(
             width: containerSize.width,
             height: containerSize.height,
+            padding: EdgeInsets.all(16.r),
             decoration: BoxDecoration(
               color: isMicrophoneOn
                   ? widget.normalIcon?.backgroundColor ??

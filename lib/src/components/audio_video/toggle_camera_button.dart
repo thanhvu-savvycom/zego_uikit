@@ -68,6 +68,7 @@ class _ZegoToggleCameraButtonState extends State<ZegoToggleCameraButton> {
           child: Container(
             width: containerSize.width,
             height: containerSize.height,
+            padding: EdgeInsets.all(16.r),
             decoration: BoxDecoration(
               color: isCameraOn
                   ? widget.normalIcon?.backgroundColor ??
