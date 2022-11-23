@@ -59,7 +59,6 @@ class _ZegoRefuseInvitationButtonState
       icon: widget.icon,
       iconTextSpacing: widget.iconTextSpacing,
       iconSize: widget.iconSize,
-      buttonSize: widget.buttonSize,
       verticalLayout: widget.verticalLayout,
       clickableTextColor: widget.clickableTextColor ?? Colors.white,
       unclickableTextColor: widget.unclickableTextColor,

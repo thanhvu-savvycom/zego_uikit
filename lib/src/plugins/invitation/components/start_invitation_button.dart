@@ -67,8 +67,6 @@ class _ZegoStartInvitationButtonState extends State<ZegoStartInvitationButton> {
       icon: widget.icon,
       iconTextSpacing: widget.iconTextSpacing,
       iconSize: widget.iconSize,
-      buttonRadius: widget.buttonSize?.width ?? 0 / 2,
-      buttonSize: widget.buttonSize,
       verticalLayout: widget.verticalLayout,
       clickableTextColor: widget.clickableTextColor,
       unclickableTextColor: widget.unclickableTextColor,
