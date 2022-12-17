@@ -6,6 +6,9 @@ enum ZegoStreamType {
   screenSharing,
 }
 
+const streamExtraInfoCameraKey = "isCameraOn";
+const streamExtraInfoMicrophoneKey = "isMicrophoneOn";
+
 // user
 class ZegoUIKitCoreUser {
   String id = '';
@@ -55,7 +58,11 @@ class ZegoUIKitCoreUser {
 
   ZegoUIKitCoreUser.fromZego(ZegoUser user) : this(user.userID, user.userName);
 
-  ZegoUIKitUser toZegoUikitUser() => ZegoUIKitUser(id: id, name: name);
+  ZegoUIKitUser toZegoUikitUser() => ZegoUIKitUser(
+        id: id,
+        name: name,
+        inRoomAttributes: inRoomAttributes.value,
+      );
 
   ZegoUser toZegoUser() => ZegoUser(id, name);
 
@@ -73,6 +80,9 @@ String generateStreamID(String userID, String roomID, ZegoStreamType type) {
 
 class ZegoUIKitCoreRoom {
   String id = '';
+
+  bool isLargeRoom = false;
+  bool markAsLargeRoom = false;
 
   var state = ValueNotifier<ZegoUIKitRoomState>(
       ZegoUIKitRoomState(ZegoRoomStateChangedReason.Logout, 0, {}));

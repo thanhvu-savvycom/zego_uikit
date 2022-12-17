@@ -57,6 +57,8 @@ class _ZegoCancelInvitationButtonState
       icon: widget.icon,
       iconTextSpacing: widget.iconTextSpacing,
       iconSize: widget.iconSize,
+      buttonRadius: widget.buttonSize?.width ?? 0 / 2,
+      buttonSize: widget.buttonSize,
       verticalLayout: widget.verticalLayout,
       clickableTextColor: widget.clickableTextColor,
       unclickableTextColor: widget.unclickableTextColor,
@@ -66,7 +68,8 @@ class _ZegoCancelInvitationButtonState
   }
 
   void onPressed() async {
-    var result = await ZegoUIKitSignalingPluginImp.shared
+    var result = await ZegoUIKit()
+        .getSignalingPlugin()
         .cancelInvitation(widget.invitees, '');
 
     if (widget.onPressed != null) {

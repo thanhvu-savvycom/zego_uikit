@@ -4,3 +4,4 @@ export 'room_defines.dart';
 export 'effect_defines.dart';
 export 'plugin_defines.dart';
 export 'permission_defines.dart';
+export 'command.dart';

@@ -5,26 +5,31 @@ import 'package:flutter/cupertino.dart';
 
 // Project imports:
 import 'package:zego_uikit/zego_uikit.dart';
-import 'defines.dart';
 import 'invitation/service.dart';
-import 'room_attributes/service.dart';
+import 'room_message/service.dart';
+import 'room_properties/service.dart';
 import 'user_attributes/service.dart';
 
-class ZegoUIKitSignalingPluginImp
+class ZegoUIKitSignalingPluginImpl
     with
         ZegoUIKitInvitationService,
         ZegoUIKitRoomAttributesPluginService,
-        ZegoUIKitUserInRoomAttributesPluginService {
-  static final ZegoUIKitSignalingPluginImp shared =
-      ZegoUIKitSignalingPluginImp._internal();
+        ZegoUIKitUserInRoomAttributesPluginService,
+        ZegoUIKitRoomMessagePluginService {
+  /// single instance
+  static final ZegoUIKitSignalingPluginImpl shared =
+      ZegoUIKitSignalingPluginImpl._internal();
 
-  factory ZegoUIKitSignalingPluginImp() => shared;
+  /// single instance
+  factory ZegoUIKitSignalingPluginImpl() => shared;
 
-  ZegoUIKitSignalingPluginImp._internal() {
+  /// single instance
+  ZegoUIKitSignalingPluginImpl._internal() {
     WidgetsFlutterBinding.ensureInitialized();
     assert(ZegoUIKit().getPlugin(ZegoUIKitPluginType.signaling) != null);
   }
 
+  /// init
   Future<void> init(int appID, {String appSign = ''}) async {
     await ZegoUIKit().getPlugin(ZegoUIKitPluginType.signaling)!.invoke('init', {
       'appID': appID,
@@ -32,12 +37,14 @@ class ZegoUIKitSignalingPluginImp
     });
   }
 
+  /// uninit
   Future<void> uninit() async {
     await ZegoUIKit()
         .getPlugin(ZegoUIKitPluginType.signaling)!
         .invoke('uninit', {});
   }
 
+  /// login
   Future<void> login(String id, String name) async {
     await ZegoUIKit()
         .getPlugin(ZegoUIKitPluginType.signaling)!
@@ -47,12 +54,14 @@ class ZegoUIKitSignalingPluginImp
     });
   }
 
+  /// logout
   Future<void> logout() async {
     await ZegoUIKit()
         .getPlugin(ZegoUIKitPluginType.signaling)!
         .invoke('logout', {});
   }
 
+  /// join room
   Future<ZegoSignalingPluginResult> joinRoom(String roomID,
       {String roomName = ""}) async {
     Map result = await ZegoUIKit()
@@ -63,11 +72,12 @@ class ZegoUIKitSignalingPluginImp
     });
 
     return ZegoSignalingPluginResult(
-      result['code'] as String,
-      result['message'] as String,
+      result["errorCode"] as String,
+      result["errorMessage"] as String,
     );
   }
 
+  /// leave room
   Future<void> leaveRoom() async {
     await ZegoUIKit()
         .getPlugin(ZegoUIKitPluginType.signaling)!

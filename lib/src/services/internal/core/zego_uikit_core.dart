@@ -1,7 +1,6 @@
 // Dart imports:
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 // Flutter imports:
 import 'package:flutter/cupertino.dart';
@@ -38,17 +37,18 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
 
   bool isInit = false;
   bool isNeedDisableWakelock = false;
+  List<StreamSubscription<dynamic>?> subscriptions = [];
 
   Future<String> getZegoUIKitVersion() async {
     String expressVersion = await ZegoExpressEngine.getVersion();
-    String zegoUIKitVersion = 'zego_uikit:1.7.0; ';
+    String zegoUIKitVersion = 'zego_uikit:1.7.5; ';
     return zegoUIKitVersion + 'zego_express:$expressVersion';
   }
 
   Future<void> init({
     required int appID,
     String appSign = '',
-    ZegoScenario scenario = ZegoScenario.Communication,
+    ZegoScenario scenario = ZegoScenario.Default,
     String? tokenServerUrl,
   }) async {
     if (isInit) {
@@ -78,6 +78,9 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
       coreData.localUser.audioRoute.value = initAudioRoute;
       coreData.localUser.lastAudioRoute = initAudioRoute;
     }
+
+    subscriptions.add(coreData.customCommandReceivedStreamCtrl.stream
+        .listen(onCustomCommandReceived));
   }
 
   Future<void> uninit() async {
@@ -90,6 +93,10 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
 
     uninitEventHandle();
     clear();
+
+    for (var subscription in subscriptions) {
+      subscription?.cancel();
+    }
 
     await ZegoExpressEngine.destroyEngine();
   }
@@ -110,16 +117,20 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
     coreData.logout();
   }
 
-  Future<ZegoRoomLoginResult> joinRoom(String roomID,
-      {String token = ''}) async {
+  Future<ZegoRoomLoginResult> joinRoom(
+    String roomID, {
+    String token = '',
+    bool markAsLargeRoom = false,
+  }) async {
     if (kIsWeb) {
       assert(token.isNotEmpty);
     }
 
-    debugPrint("[core] join room, room id:$roomID, token:$token");
+    debugPrint(
+        "[core] join room, room id:\"$roomID\", token:\"$token\", markAsLargeRoom:$markAsLargeRoom");
 
     clear();
-    coreData.setRoom(roomID);
+    coreData.setRoom(roomID, markAsLargeRoom: markAsLargeRoom);
 
     Future<bool> originWakelockEnabledF = Wakelock.enabled;
 
@@ -129,9 +140,13 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
       coreData.localUser.toZegoUser(),
       config: ZegoRoomConfig(0, true, token),
     );
+    debugPrint(
+        "[core] join room result: ${joinRoomResult.errorCode} ${joinRoomResult.extendedData}");
 
     if (joinRoomResult.errorCode == 0) {
       coreData.startPublishOrNot();
+      syncDeviceStatusByStreamExtraInfo();
+
       bool originWakelockEnabled = await originWakelockEnabledF;
       if (originWakelockEnabled) {
         isNeedDisableWakelock = false;
@@ -146,13 +161,16 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
       await leaveRoom();
       return await joinRoom(roomID, token: token);
     } else {
-      log("joinRoom failed: ${joinRoomResult.errorCode}, ${joinRoomResult.extendedData.toString()}");
+      debugPrint(
+          "joinRoom failed: ${joinRoomResult.errorCode}, ${joinRoomResult.extendedData.toString()}");
     }
 
     return joinRoomResult;
   }
 
   Future<ZegoRoomLogoutResult> leaveRoom() async {
+    debugPrint("[core] leave room");
+
     if (isNeedDisableWakelock) {
       Wakelock.disable();
     }
@@ -166,10 +184,29 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
     ZegoRoomLogoutResult leaveResult =
         await ZegoExpressEngine.instance.logoutRoom();
     if (leaveResult.errorCode != 0) {
-      log("leaveRoom failed: ${leaveResult.errorCode}, ${leaveResult.extendedData.toString()}");
+      debugPrint(
+          "leaveRoom failed: ${leaveResult.errorCode}, ${leaveResult.extendedData.toString()}");
     }
 
     return leaveResult;
+  }
+
+  Future<bool> removeUser(List<String> userIDs) async {
+    debugPrint("[core] remove users:$userIDs");
+
+    if (ZegoUIKitCore.shared.coreData.room.isLargeRoom ||
+        ZegoUIKitCore.shared.coreData.room.markAsLargeRoom) {
+      debugPrint("[core] remove all users, because is a large room");
+      return await ZegoUIKitCore.shared.sendInRoomCommand(
+        {removeUserInRoomCommandKey: userIDs.join(",")},
+        [],
+      );
+    } else {
+      return await ZegoUIKitCore.shared.sendInRoomCommand(
+        {removeUserInRoomCommandKey: userIDs.join(",")},
+        userIDs,
+      );
+    }
   }
 
   Future<bool> updateRoomProperty(String key, String value) async {
@@ -288,21 +325,32 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
     });
   }
 
-  Future<bool> sendCustomCommand(Map<String, String> commands) async {
+  Future<bool> sendInRoomCommand(
+    Map<String, String> commands,
+    List<String> toUserIDs,
+  ) async {
     var command = const JsonEncoder().convert(commands);
+    debugPrint("[core] send in-room command:$command to $toUserIDs");
+
     return await ZegoExpressEngine.instance
         .sendCustomCommand(
             coreData.room.id,
             command,
-            coreData.remoteUsersList
-                .map((ZegoUIKitCoreUser user) => ZegoUser(user.id, user.name))
-                .toList())
+            toUserIDs.isEmpty
+                // empty mean send to all users
+                ? coreData.remoteUsersList
+                    .map((ZegoUIKitCoreUser user) =>
+                        ZegoUser(user.id, user.name))
+                    .toList()
+                : toUserIDs
+                    .map((String userID) => coreData.remoteUsersList
+                        .firstWhere((element) => element.id == userID,
+                            orElse: () => ZegoUIKitCoreUser.empty())
+                        .toZegoUser())
+                    .toList())
         .then(
       (ZegoIMSendCustomCommandResult result) {
-        if (0 != result.errorCode) {
-          debugPrint(
-              "fail to send custom command end room, error code:${result.errorCode}");
-        }
+        debugPrint("send custom command result, code:${result.errorCode}");
 
         return 0 == result.errorCode;
       },
@@ -362,16 +410,40 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
     }
   }
 
-  void turnCameraOn(bool isOn) {
-    debugPrint("[core] turn on camera $isOn");
+  void turnCameraOn(String userID, bool isOn) {
+    debugPrint("[core] turn ${isOn ? "on" : "off"} $userID camera");
+
+    if (coreData.localUser.id == userID) {
+      turnOnLocalCamera(isOn);
+    } else {
+      var isLargeRoom =
+          coreData.room.isLargeRoom || coreData.room.markAsLargeRoom;
+      debugPrint("[core] is large room:$isLargeRoom");
+
+      if (isOn) {
+        sendInRoomCommand(
+          {turnCameraOnInRoomCommandKey: userID},
+          isLargeRoom ? [userID] : [],
+        );
+      } else {
+        sendInRoomCommand(
+          {turnCameraOffInRoomCommandKey: userID},
+          isLargeRoom ? [userID] : [],
+        );
+      }
+    }
+  }
+
+  void turnOnLocalCamera(bool isOn) {
+    debugPrint("[core] turn ${isOn ? "on" : "off"} local camera");
 
     if (!isInit) {
-      debugPrint("[core] turn on camera, core had not init");
+      debugPrint("[core] turn on local camera, core had not init");
       return;
     }
 
     if (isOn == coreData.localUser.camera.value) {
-      debugPrint("[core] turn on camera, value is equal");
+      debugPrint("[core] turn on local camera, value is equal");
       return;
     }
 
@@ -390,18 +462,44 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
     coreData.localUser.camera.value = isOn;
 
     coreData.startPublishOrNot();
+
+    syncDeviceStatusByStreamExtraInfo();
   }
 
-  void turnMicrophoneOn(bool isOn) {
-    debugPrint("[core] turn on microphone $isOn");
+  void turnMicrophoneOn(String userID, bool isOn) {
+    debugPrint("[core] turn ${isOn ? "on" : "off"} $userID microphone");
+
+    if (coreData.localUser.id == userID) {
+      turnOnLocalMicrophone(isOn);
+    } else {
+      var isLargeRoom =
+          coreData.room.isLargeRoom || coreData.room.markAsLargeRoom;
+      debugPrint("[core] is large room:$isLargeRoom");
+
+      if (isOn) {
+        sendInRoomCommand(
+          {turnMicrophoneOnInRoomCommandKey: userID},
+          isLargeRoom ? [userID] : [],
+        );
+      } else {
+        sendInRoomCommand(
+          {turnMicrophoneOffInRoomCommandKey: userID},
+          isLargeRoom ? [userID] : [],
+        );
+      }
+    }
+  }
+
+  void turnOnLocalMicrophone(bool isOn) {
+    debugPrint("[core] turn ${isOn ? "on" : "off"} local microphone");
 
     if (!isInit) {
-      debugPrint("[core] turn on microphone, core had not init");
+      debugPrint("[core] turn on local microphone, core had not init");
       return;
     }
 
     if (isOn == coreData.localUser.microphone.value) {
-      debugPrint("[core] turn on microphone, value is equal");
+      debugPrint("[core] turn on local microphone, value is equal");
       return;
     }
 
@@ -413,6 +511,18 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
 
     coreData.localUser.microphone.value = isOn;
     coreData.startPublishOrNot();
+
+    syncDeviceStatusByStreamExtraInfo();
+  }
+
+  void syncDeviceStatusByStreamExtraInfo() {
+    // sync device status via stream extra info
+    var streamExtraInfo = {
+      streamExtraInfoCameraKey: coreData.localUser.camera.value,
+      streamExtraInfoMicrophoneKey: coreData.localUser.microphone.value
+    };
+    ZegoExpressEngine.instance
+        .setStreamExtraInfo(const JsonEncoder().convert(streamExtraInfo));
   }
 
   void updateTextureRendererOrientation(Orientation orientation) {
@@ -505,6 +615,47 @@ class ZegoUIKitCore with ZegoUIKitCoreEvent {
     } else {
       coreData.videoConfig.useVideoViewAspectFill = useVideoViewAspectFill;
       // TODO: need re preview, and re playStream
+    }
+  }
+
+  void onCustomCommandReceived(ZegoInRoomCommandReceivedData commandData) {
+    var extraInfos = jsonDecode(commandData.command) as Map<String, dynamic>;
+    if (extraInfos.keys.contains(removeUserInRoomCommandKey) &&
+        extraInfos[removeUserInRoomCommandKey]!
+            .toString()
+            .split(",")
+            .contains(coreData.localUser.id)) {
+      debugPrint(
+          "[core] local user had been remove by ${commandData.fromUser.id}, auto "
+          "leave room");
+      leaveRoom();
+
+      coreData.meRemovedFromRoomStreamCtrl.add(commandData.fromUser.id);
+    } else if (extraInfos.keys.contains(turnCameraOnInRoomCommandKey) &&
+        extraInfos[turnCameraOnInRoomCommandKey]!.toString() ==
+            coreData.localUser.id) {
+      debugPrint(
+          "[core] local camera request turn on by ${commandData.fromUser}");
+      coreData.turnOnYourCameraRequestStreamCtrl.add(commandData.fromUser.id);
+    } else if (extraInfos.keys.contains(turnCameraOffInRoomCommandKey) &&
+        extraInfos[turnCameraOffInRoomCommandKey]!.toString() ==
+            coreData.localUser.id) {
+      debugPrint(
+          "[core] local camera request turn off by ${commandData.fromUser}");
+      turnCameraOn(coreData.localUser.id, false);
+    } else if (extraInfos.keys.contains(turnMicrophoneOnInRoomCommandKey) &&
+        extraInfos[turnMicrophoneOnInRoomCommandKey]!.toString() ==
+            coreData.localUser.id) {
+      debugPrint(
+          "[core] local microphone request turn on by ${commandData.fromUser}");
+      coreData.turnOnYourMicrophoneRequestStreamCtrl
+          .add(commandData.fromUser.id);
+    } else if (extraInfos.keys.contains(turnMicrophoneOffInRoomCommandKey) &&
+        extraInfos[turnMicrophoneOffInRoomCommandKey]!.toString() ==
+            coreData.localUser.id) {
+      debugPrint(
+          "[core] local microphone request turn off by ${commandData.fromUser}");
+      turnMicrophoneOn(coreData.localUser.id, false);
     }
   }
 }

@@ -5,11 +5,14 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 
 // Package imports:
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 
 // Project imports:
+import 'package:zego_uikit/src/components/defines.dart';
 import 'package:zego_uikit/src/components/internal/internal.dart';
 import 'package:zego_uikit/src/services/services.dart';
+import 'avatar/avatar.dart';
 
 /// type of audio video view foreground builder
 typedef ZegoAudioVideoViewForegroundBuilder = Widget Function(
@@ -37,6 +40,7 @@ class ZegoAudioVideoView extends StatefulWidget {
     this.borderRadius,
     this.borderColor = const Color(0xffA4A4A4),
     this.extraInfo = const {},
+    this.avatarConfig,
   }) : super(key: key);
 
   final ZegoUIKitUser? user;
@@ -51,6 +55,8 @@ class ZegoAudioVideoView extends StatefulWidget {
   final double? borderRadius;
   final Color borderColor;
   final Map extraInfo;
+
+  final ZegoAvatarConfig? avatarConfig;
 
   @override
   State<ZegoAudioVideoView> createState() => _ZegoAudioVideoViewState();
@@ -130,20 +136,34 @@ class _ZegoAudioVideoViewState extends State<ZegoAudioVideoView> {
   }
 
   Widget background() {
-    if (widget.backgroundBuilder != null) {
-      return LayoutBuilder(
-        builder: (context, constraints) {
-          return widget.backgroundBuilder!.call(
-            context,
-            Size(constraints.maxWidth, constraints.maxHeight),
-            widget.user,
-            widget.extraInfo,
-          );
-        },
-      );
-    }
-
-    return Container(color: Colors.transparent);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          children: [
+            widget.backgroundBuilder?.call(
+                  context,
+                  Size(constraints.maxWidth, constraints.maxHeight),
+                  widget.user,
+                  widget.extraInfo,
+                ) ??
+                Container(color: Colors.transparent),
+            Positioned(
+              top: 0,
+              left: 0,
+              child: SizedBox(
+                width: constraints.maxWidth,
+                height: constraints.maxHeight,
+                child: Stack(
+                  children: [
+                    avatar(constraints.maxWidth, constraints.maxHeight)
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget foreground() {
@@ -184,5 +204,42 @@ class _ZegoAudioVideoViewState extends State<ZegoAudioVideoView> {
         child: child,
       ),
     );
+  }
+
+  Widget avatar(double maxWidth, double maxHeight) {
+    var screenSize = MediaQuery.of(context).size;
+    var isSmallView = maxHeight < screenSize.height / 2;
+    var avatarSize = isSmallView ? Size(110.r, 110.r) : Size(258.r, 258.r);
+
+    return Positioned(
+      top: getAvatarTop(maxWidth, maxHeight, avatarSize),
+      left: (maxWidth - avatarSize.width) / 2,
+      child: SizedBox(
+        width: widget.avatarConfig?.size?.width ?? avatarSize.width,
+        height: widget.avatarConfig?.size?.height ?? avatarSize.width,
+        child: ZegoAvatar(
+          avatarSize: widget.avatarConfig?.size ?? avatarSize,
+          user: widget.user,
+          showAvatar: widget.avatarConfig?.showInAudioMode ?? true,
+          showSoundLevel:
+              widget.avatarConfig?.showSoundWavesInAudioMode ?? true,
+          avatarBuilder: widget.avatarConfig?.builder,
+          soundLevelSize: widget.avatarConfig?.size,
+          soundLevelColor: widget.avatarConfig?.soundWaveColor,
+        ),
+      ),
+    );
+  }
+
+  double getAvatarTop(double maxWidth, double maxHeight, Size avatarSize) {
+    switch (
+        widget.avatarConfig?.verticalAlignment ?? ZegoAvatarAlignment.center) {
+      case ZegoAvatarAlignment.center:
+        return (maxHeight - avatarSize.height) / 2;
+      case ZegoAvatarAlignment.start:
+        return 15.r; //  sound level height
+      case ZegoAvatarAlignment.end:
+        return maxHeight - avatarSize.height;
+    }
   }
 }

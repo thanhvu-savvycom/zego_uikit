@@ -1,47 +1,58 @@
 // Project imports:
-import 'package:zego_uikit/src/plugins/defines.dart';
 import 'package:zego_uikit/zego_uikit.dart';
 
 mixin ZegoUIKitUserInRoomAttributesPluginService {
+  /// set users in-room attributes
   Future<ZegoSignalingPluginResult> setUsersInRoomAttributes(
-    Map<String, String> attributes,
+    String key,
+    String value,
     List<String> userIDs,
   ) async {
     Map result = await ZegoUIKit()
         .getPlugin(ZegoUIKitPluginType.signaling)!
         .invoke('setUsersInRoomAttributes', {
-      'attributes': attributes,
+      'key': key,
+      'value': value,
       'userIDs': userIDs,
     });
 
     return ZegoSignalingPluginResult(
-      result['code'] as String,
-      result['message'] as String,
+      result["errorCode"] as String,
+      result["errorMessage"] as String,
       result: result['errorUserList'] as List<String>,
     );
   }
 
-  Future<ZegoSignalingPluginResult> queryUsersInRoomAttributesList({
+  /// query user in-room attributes
+  Future<ZegoSignalingPluginResult> queryUsersInRoomAttributes({
     String nextFlag = '',
     int count = 100,
   }) async {
     Map result = await ZegoUIKit()
         .getPlugin(ZegoUIKitPluginType.signaling)!
-        .invoke('queryUsersInRoomAttributesList', {
+        .invoke('queryUsersInRoomAttributes', {
       'nextFlag': nextFlag,
       'count': count,
     });
 
     return ZegoSignalingPluginResult(
-      result['code'] as String,
-      result['message'] as String,
+      result["errorCode"] as String,
+      result["errorMessage"] as String,
       result: result['infos'] as Map<String, Map<String, String>>,
     );
   }
 
-  Stream<Map> getUsersInRoomAttributesStream() {
+  /// get users in-room attributes notifier
+  Stream<ZegoSignalingUserInRoomAttributesData>
+      getUsersInRoomAttributesStream() {
     return ZegoUIKit()
         .getPlugin(ZegoUIKitPluginType.signaling)!
-        .getEventStream('usersInRoomAttributes');
+        .getEventStream('usersInRoomAttributes')
+        .map((data) {
+      return ZegoSignalingUserInRoomAttributesData(
+        editor: data["editor"] as ZegoUIKitUser?,
+        infos: data["infos"] as Map<String, Map<String, String>>,
+      );
+    });
   }
 }

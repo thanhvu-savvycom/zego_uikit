@@ -5,14 +5,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:zego_uikit/src/components/widgets/widgets.dart';
+import 'package:zego_uikit/src/services/services.dart';
+import 'ripple_animation.dart';
 
 /// display sound level value through circular ripples
 class ZegoRippleAvatar extends StatefulWidget {
   const ZegoRippleAvatar({
     Key? key,
+    required this.user,
     required this.child,
-    required this.soundLevelStream,
     this.color,
     this.minRadius = 60,
     this.radiusIncrement = 0.2,
@@ -20,8 +21,7 @@ class ZegoRippleAvatar extends StatefulWidget {
 
   final Widget child;
 
-  /// sound level stream
-  final Stream<double> soundLevelStream;
+  final ZegoUIKitUser? user;
 
   /// min radius of ripple
   final double minRadius;
@@ -46,8 +46,9 @@ class _ZegoRippleAvatarState extends State<ZegoRippleAvatar> {
     super.initState();
 
     /// listen subscription
-    soundLevelStreamSubscription =
-        widget.soundLevelStream.listen(onSoundLevelChanged);
+    soundLevelStreamSubscription = ZegoUIKit()
+        .getSoundLevelStream(widget.user?.id ?? "")
+        .listen(onSoundLevelChanged);
   }
 
   @override
@@ -56,6 +57,16 @@ class _ZegoRippleAvatarState extends State<ZegoRippleAvatar> {
     soundLevelStreamSubscription?.cancel();
 
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant ZegoRippleAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    soundLevelStreamSubscription?.cancel();
+    soundLevelStreamSubscription = ZegoUIKit()
+        .getSoundLevelStream(widget.user?.id ?? "")
+        .listen(onSoundLevelChanged);
   }
 
   @override

@@ -1,5 +1,4 @@
 // Project imports:
-import 'package:zego_uikit/src/plugins/defines.dart';
 import 'package:zego_uikit/zego_uikit.dart';
 
 mixin ZegoUIKitInvitationService {
@@ -26,8 +25,8 @@ mixin ZegoUIKitInvitationService {
     });
 
     return ZegoSignalingPluginResult(
-      result['code'] as String,
-      result['message'] as String,
+      result["errorCode"] as String,
+      result["errorMessage"] as String,
       result: result['errorInvitees'] as List<String>,
     );
   }
@@ -45,12 +44,13 @@ mixin ZegoUIKitInvitationService {
     });
 
     return ZegoSignalingPluginResult(
-      result['code'] as String,
-      result['message'] as String,
+      result["errorCode"] as String,
+      result["errorMessage"] as String,
       result: result['errorInvitees'] as List<String>,
     );
   }
 
+  /// refuse invitation
   Future<ZegoSignalingPluginResult> refuseInvitation(
       String inviterID, String data) async {
     Map result = await ZegoUIKit()
@@ -61,8 +61,8 @@ mixin ZegoUIKitInvitationService {
     });
 
     return ZegoSignalingPluginResult(
-      result['code'] as String,
-      result['message'] as String,
+      result["errorCode"] as String,
+      result["errorMessage"] as String,
     );
   }
 
@@ -79,16 +79,23 @@ mixin ZegoUIKitInvitationService {
     });
 
     return ZegoSignalingPluginResult(
-      result['code'] as String,
-      result['message'] as String,
+      result["errorCode"] as String,
+      result["errorMessage"] as String,
     );
   }
 
-  /// stream callback, notify invitee when call invitation received
-  Stream<Map> getInvitationConnectionStateStream() {
+  /// stream callback
+  Stream<Map> getConnectionStateStream() {
     return ZegoUIKit()
         .getPlugin(ZegoUIKitPluginType.signaling)!
-        .getEventStream('invitationConnectionState');
+        .getEventStream('connectionState');
+  }
+
+  /// stream callback
+  Stream<Map> getRoomStateStream() {
+    return ZegoUIKit()
+        .getPlugin(ZegoUIKitPluginType.signaling)!
+        .getEventStream('roomState');
   }
 
   /// stream callback, notify invitee when call invitation received

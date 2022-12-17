@@ -67,6 +67,8 @@ class _ZegoStartInvitationButtonState extends State<ZegoStartInvitationButton> {
       icon: widget.icon,
       iconTextSpacing: widget.iconTextSpacing,
       iconSize: widget.iconSize,
+      buttonRadius: widget.buttonSize?.width ?? 0 / 2,
+      buttonSize: widget.buttonSize,
       verticalLayout: widget.verticalLayout,
       clickableTextColor: widget.clickableTextColor,
       unclickableTextColor: widget.unclickableTextColor,
@@ -81,13 +83,13 @@ class _ZegoStartInvitationButtonState extends State<ZegoStartInvitationButton> {
       return;
     }
 
-    var result = await ZegoUIKitSignalingPluginImp.shared.sendInvitation(
-      ZegoUIKit().getLocalUser().name,
-      widget.invitees,
-      widget.timeoutSeconds,
-      widget.invitationType,
-      widget.data,
-    );
+    var result = await ZegoUIKit().getSignalingPlugin().sendInvitation(
+          ZegoUIKit().getLocalUser().name,
+          widget.invitees,
+          widget.timeoutSeconds,
+          widget.invitationType,
+          widget.data,
+        );
 
     if (widget.onPressed != null) {
       widget.onPressed!(

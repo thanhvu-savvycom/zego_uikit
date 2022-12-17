@@ -179,6 +179,7 @@ class _ZegoInRoomMessageInputState extends State<ZegoInRoomMessageInput> {
             backgroundColor: widget.buttonColor,
           ),
           iconSize: Size(68.r, 68.r),
+          buttonSize: Size(72.r, 72.r),
         );
       },
     );

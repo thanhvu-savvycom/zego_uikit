@@ -11,5 +11,33 @@ class ButtonIcon {
   ButtonIcon({this.icon, this.backgroundColor});
 }
 
+enum ZegoAvatarAlignment {
+  center,
+  start,
+  end,
+}
+
 typedef ZegoAvatarBuilder = Widget Function(
-    BuildContext context, Size size, ZegoUIKitUser? user, Map extraInfo);
+  BuildContext context,
+  Size size,
+  ZegoUIKitUser? user,
+  Map extraInfo,
+);
+
+class ZegoAvatarConfig {
+  final bool? showInAudioMode;
+  final bool? showSoundWavesInAudioMode;
+  final ZegoAvatarAlignment verticalAlignment;
+  final Size? size;
+  final Color? soundWaveColor;
+  final ZegoAvatarBuilder? builder;
+
+  const ZegoAvatarConfig({
+    this.showInAudioMode,
+    this.showSoundWavesInAudioMode,
+    this.verticalAlignment = ZegoAvatarAlignment.center,
+    this.size,
+    this.soundWaveColor,
+    this.builder,
+  });
+}

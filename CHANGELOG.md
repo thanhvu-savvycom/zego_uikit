@@ -93,3 +93,23 @@
 ## 1.7.0
 
 * support live audio room
+
+## 1.7.1
+
+* fix some bugs
+
+## 1.7.2
+
+* fix some bugs
+
+## 1.7.3
+
+* fix some bugs
+
+## 1.7.4
+
+* support custom command and room message
+
+## 1.7.5
+
+* fix some bugs

@@ -58,14 +58,14 @@ Future<T?> showTopModalSheet<T>(BuildContext context, Widget widget,
     barrierLabel: MaterialLocalizations.of(context).dialogLabel,
     barrierColor: Colors.black.withOpacity(0.5),
     pageBuilder: (context, _, __) => ScreenUtilInit(
-      designSize: const Size(375, 812),
+      designSize: const Size(750, 1334),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
         return SafeArea(
             child: Column(
           children: [
-            SizedBox(height: 10.h),
+            SizedBox(height: 16.h),
             widget,
           ],
         ));

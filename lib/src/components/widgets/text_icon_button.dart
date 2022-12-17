@@ -20,12 +20,15 @@ class ZegoTextIconButton extends StatefulWidget {
   final double? iconTextSpacing;
   final Color? iconBorderColor;
 
+  final Size? buttonSize;
+  final double? buttonRadius;
+
   final VoidCallback? onPressed;
   final Color? clickableTextColor;
   final Color? unclickableTextColor;
   final Color? clickableBackgroundColor;
   final Color? unclickableBackgroundColor;
-  final TextAlign? textAlign;
+
   final bool verticalLayout;
 
   const ZegoTextIconButton({
@@ -37,12 +40,14 @@ class ZegoTextIconButton extends StatefulWidget {
     this.iconTextSpacing,
     this.iconSize,
     this.iconBorderColor,
+    this.buttonSize,
+    this.buttonRadius,
     this.onPressed,
     this.clickableTextColor = Colors.black,
     this.unclickableTextColor = Colors.black,
     this.clickableBackgroundColor = Colors.transparent,
     this.unclickableBackgroundColor = Colors.transparent,
-    this.verticalLayout = true, this.textAlign,
+    this.verticalLayout = true,
   }) : super(key: key);
 
   @override
@@ -54,15 +59,30 @@ class _ZegoTextIconButtonState extends State<ZegoTextIconButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      child: widget.verticalLayout
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: children(context),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: children(context),
-            ),
+      child: Container(
+        width: widget.buttonSize?.width ?? 120.r,
+        height: widget.buttonSize?.height ?? 120.r,
+        decoration: BoxDecoration(
+          color: widget.onPressed != null
+              ? widget.clickableBackgroundColor
+              : widget.unclickableBackgroundColor,
+          borderRadius: null != widget.buttonRadius
+              ? BorderRadius.all(Radius.circular(widget.buttonRadius!))
+              : null,
+          shape: null != widget.buttonRadius
+              ? BoxShape.rectangle
+              : BoxShape.circle,
+        ),
+        child: widget.verticalLayout
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: children(context),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: children(context),
+              ),
+      ),
     );
   }
 
@@ -102,12 +122,11 @@ class _ZegoTextIconButtonState extends State<ZegoTextIconButton> {
 
     return [
       widget.verticalLayout
-          ? SizedBox(height: widget.iconTextSpacing ?? 8.r)
-          : SizedBox(width: widget.iconTextSpacing ?? 8.r),
+          ? SizedBox(height: widget.iconTextSpacing ?? 12.r)
+          : SizedBox(width: widget.iconTextSpacing ?? 12.r),
       Text(
         widget.text!,
         softWrap: widget.softWrap,
-        textAlign: widget.textAlign ?? TextAlign.center,
         style: widget.textStyle ??
             TextStyle(
               color: widget.onPressed != null

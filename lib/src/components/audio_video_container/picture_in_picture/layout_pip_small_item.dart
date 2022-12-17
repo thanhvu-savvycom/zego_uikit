@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 // Project imports:
 import 'package:zego_uikit/src/components/audio_video/audio_video_view.dart';
 import 'package:zego_uikit/src/components/audio_video_container/picture_in_picture/defines.dart';
+import 'package:zego_uikit/src/components/defines.dart';
 import 'package:zego_uikit/src/services/services.dart';
 
 class ZegoLayoutPIPSmallItem extends StatefulWidget {
@@ -23,6 +24,7 @@ class ZegoLayoutPIPSmallItem extends StatefulWidget {
     this.borderRadius,
     this.size,
     this.margin,
+    this.avatarConfig,
   }) : super(key: key);
 
   final bool draggable;
@@ -37,6 +39,9 @@ class ZegoLayoutPIPSmallItem extends StatefulWidget {
   final double? borderRadius;
   final EdgeInsets? margin;
   final Size? size;
+
+  /// avatar etc.
+  final ZegoAvatarConfig? avatarConfig;
 
   @override
   State<ZegoLayoutPIPSmallItem> createState() => _ZegoLayoutPIPSmallItemState();
@@ -90,6 +95,7 @@ class _ZegoLayoutPIPSmallItemState extends State<ZegoLayoutPIPSmallItem> {
                 borderRadius: widget.borderRadius ?? 18.0.r,
                 backgroundBuilder: widget.backgroundBuilder,
                 foregroundBuilder: widget.foregroundBuilder,
+                avatarConfig: widget.avatarConfig,
               ),
             ),
           ),

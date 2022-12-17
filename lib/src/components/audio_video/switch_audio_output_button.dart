@@ -79,13 +79,13 @@ class _ZegoSwitchAudioOutputButtonState
       icon = widget.bluetoothIcon?.icon ??
           UIKitImage.asset(StyleIconUrls.iconS1ControlBarSpeakerBluetooth);
       backgroundColor = widget.bluetoothIcon?.backgroundColor ??
-          controlBarButtonCheckedBackgroundColor;
+          controlBarButtonBackgroundColor;
     } else if (ZegoAudioRoute.Headphone == audioRoute) {
       /// always display speaker closed
       icon = widget.headphoneIcon?.icon ??
           UIKitImage.asset(StyleIconUrls.iconS1ControlBarSpeakerOff);
       backgroundColor = widget.headphoneIcon?.backgroundColor ??
-          controlBarButtonCheckedBackgroundColor;
+          controlBarButtonBackgroundColor;
     } else if (ZegoAudioRoute.Speaker == audioRoute) {
       icon = widget.speakerIcon?.icon ??
           UIKitImage.asset(StyleIconUrls.iconS1ControlBarSpeakerNormal);
@@ -95,21 +95,20 @@ class _ZegoSwitchAudioOutputButtonState
       icon = widget.headphoneIcon?.icon ??
           UIKitImage.asset(StyleIconUrls.iconS1ControlBarSpeakerOff);
       backgroundColor = widget.headphoneIcon?.backgroundColor ??
-          controlBarButtonCheckedBackgroundColor;
+          controlBarButtonBackgroundColor;
     }
 
-    Size containerSize = widget.buttonSize ?? Size(56.r, 56.r);
-    Size sizeBoxSize = widget.iconSize ?? Size(24.r, 24.r);
+    Size containerSize = widget.buttonSize ?? Size(96.r, 96.r);
+    Size sizeBoxSize = widget.iconSize ?? Size(56.r, 56.r);
 
     return GestureDetector(
       onTap: onPressed,
       child: Container(
         width: containerSize.width,
         height: containerSize.height,
-        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(12.r)
+          shape: BoxShape.circle,
         ),
         child: SizedBox.fromSize(
           size: sizeBoxSize,

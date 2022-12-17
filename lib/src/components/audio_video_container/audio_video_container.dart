@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 // Project imports:
 import 'package:zego_uikit/src/components/audio_video/audio_video_view.dart';
 import 'package:zego_uikit/src/components/audio_video_container/layout_gallery.dart';
+import 'package:zego_uikit/src/components/defines.dart';
 import 'package:zego_uikit/src/services/services.dart';
 import 'layout.dart';
 import 'layout_picture_in_picture.dart';
@@ -20,6 +21,7 @@ class ZegoAudioVideoContainer extends StatefulWidget {
     this.foregroundBuilder,
     this.backgroundBuilder,
     this.sortAudioVideo,
+    this.avatarConfig,
   }) : super(key: key);
 
   final ZegoLayout layout;
@@ -32,6 +34,9 @@ class ZegoAudioVideoContainer extends StatefulWidget {
 
   /// sorter
   final ZegoAudioVideoViewSorter? sortAudioVideo;
+
+  /// avatar etc.
+  final ZegoAvatarConfig? avatarConfig;
 
   @override
   State<ZegoAudioVideoContainer> createState() =>

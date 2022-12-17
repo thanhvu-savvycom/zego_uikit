@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 // Project imports:
 import 'package:zego_uikit/src/components/audio_video/audio_video_view.dart';
 import 'package:zego_uikit/src/components/audio_video_container/gallery/layout_gallery_last_item.dart';
+import 'package:zego_uikit/src/components/defines.dart';
 import 'package:zego_uikit/src/services/services.dart';
 import 'gallery/grid_layout_delegate.dart';
 import 'layout.dart';
@@ -30,6 +31,7 @@ class ZegoLayoutGallery extends StatefulWidget {
     this.backgroundColor = const Color(0xff171821),
     this.foregroundBuilder,
     this.backgroundBuilder,
+    this.avatarConfig,
   }) : super(key: key);
 
   final int maxItemCount;
@@ -39,6 +41,9 @@ class ZegoLayoutGallery extends StatefulWidget {
   final Color backgroundColor;
   final ZegoAudioVideoViewForegroundBuilder? foregroundBuilder;
   final ZegoAudioVideoViewBackgroundBuilder? backgroundBuilder;
+
+  /// avatar etc.
+  final ZegoAvatarConfig? avatarConfig;
 
   @override
   State<ZegoLayoutGallery> createState() => _ZegoLayoutGalleryState();
@@ -64,15 +69,18 @@ class _ZegoLayoutGalleryState extends State<ZegoLayoutGallery> {
     }
 
     var layoutItems = layoutUsers.map((user) {
-      var audioVideoView = ZegoAudioVideoView(
-        user: user,
-        backgroundBuilder: widget.backgroundBuilder,
-        foregroundBuilder: widget.foregroundBuilder,
-        borderRadius: widget.layoutConfig.addBorderRadiusAndSpacingBetweenView
-            ? 18.0.w
-            : null,
-        borderColor: Colors.transparent,
-      );
+      var audioVideoView = LayoutBuilder(builder: (context, constraints) {
+        return ZegoAudioVideoView(
+          user: user,
+          backgroundBuilder: widget.backgroundBuilder,
+          foregroundBuilder: widget.foregroundBuilder,
+          borderRadius: widget.layoutConfig.addBorderRadiusAndSpacingBetweenView
+              ? 18.0.w
+              : null,
+          borderColor: Colors.transparent,
+          avatarConfig: widget.avatarConfig,
+        );
+      });
       return LayoutId(
         id: user.id,
         child: audioVideoView,

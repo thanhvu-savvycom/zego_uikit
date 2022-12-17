@@ -54,8 +54,8 @@ class _ZegoToggleCameraButtonState extends State<ZegoToggleCameraButton> {
 
   @override
   Widget build(BuildContext context) {
-    Size containerSize = widget.buttonSize ?? Size(56.r, 56.r);
-    Size sizeBoxSize = widget.iconSize ?? Size(24.r, 24.r);
+    Size containerSize = widget.buttonSize ?? Size(96.r, 96.r);
+    Size sizeBoxSize = widget.iconSize ?? Size(56.r, 56.r);
 
     /// listen local camera state changes
     return ValueListenableBuilder<bool>(
@@ -68,14 +68,13 @@ class _ZegoToggleCameraButtonState extends State<ZegoToggleCameraButton> {
           child: Container(
             width: containerSize.width,
             height: containerSize.height,
-            padding: EdgeInsets.all(16.r),
             decoration: BoxDecoration(
               color: isCameraOn
                   ? widget.normalIcon?.backgroundColor ??
-                  controlBarButtonCheckedBackgroundColor
+                      controlBarButtonCheckedBackgroundColor
                   : widget.offIcon?.backgroundColor ??
-                  controlBarButtonCheckedBackgroundColor,
-                borderRadius: BorderRadius.circular(12.r)
+                      controlBarButtonBackgroundColor,
+              shape: BoxShape.circle,
             ),
             child: SizedBox.fromSize(
               size: sizeBoxSize,

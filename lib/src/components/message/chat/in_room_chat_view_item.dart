@@ -60,8 +60,8 @@ class _ZegoCallMessageListState extends State<ZegoInRoomChatViewItem> {
 
   Widget avatar() {
     return widget.avatarBuilder
-            ?.call(context, Size(24.r, 24.r), widget.message.user, {}) ??
-        circleName(context, Size(24.r, 24.r), widget.message.user);
+            ?.call(context, Size(56.r, 56.r), widget.message.user, {}) ??
+        circleName(context, Size(56.r, 56.r), widget.message.user);
   }
 
   Widget content() {

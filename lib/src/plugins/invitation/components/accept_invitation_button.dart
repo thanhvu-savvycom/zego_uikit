@@ -59,6 +59,7 @@ class _ZegoAcceptInvitationButtonState
       icon: widget.icon,
       iconTextSpacing: widget.iconTextSpacing,
       iconSize: widget.iconSize,
+      buttonSize: widget.buttonSize,
       verticalLayout: widget.verticalLayout,
       clickableTextColor: widget.clickableTextColor ?? Colors.white,
       unclickableTextColor: widget.unclickableTextColor,
@@ -68,7 +69,8 @@ class _ZegoAcceptInvitationButtonState
   }
 
   void onPressed() async {
-    var result = await ZegoUIKitSignalingPluginImp.shared
+    var result = await ZegoUIKit()
+        .getSignalingPlugin()
         .acceptInvitation(widget.inviterID, '');
 
     if (widget.onPressed != null) {

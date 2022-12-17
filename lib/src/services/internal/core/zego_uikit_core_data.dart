@@ -21,7 +21,14 @@ class ZegoUIKitCoreData {
   var audioVideoListStreamCtrl =
       StreamController<List<ZegoUIKitCoreUser>>.broadcast();
 
+  var meRemovedFromRoomStreamCtrl = StreamController<String>.broadcast();
+  var customCommandReceivedStreamCtrl =
+      StreamController<ZegoInRoomCommandReceivedData>.broadcast();
   var networkModeStreamCtrl = StreamController<ZegoNetworkMode>.broadcast();
+
+  var turnOnYourCameraRequestStreamCtrl = StreamController<String>.broadcast();
+  var turnOnYourMicrophoneRequestStreamCtrl =
+      StreamController<String>.broadcast();
 
   ZegoUIKitVideoConfig videoConfig = ZegoUIKitVideoConfig();
 
@@ -56,7 +63,7 @@ class ZegoUIKitCoreData {
   }
 
   ZegoUIKitCoreUser login(String id, String name) {
-    debugPrint("[core] login, id:$id, name:$name");
+    debugPrint("[core] login, id:\"$id\", name:$name");
 
     localUser.id = id;
     localUser.name = name;
@@ -78,10 +85,15 @@ class ZegoUIKitCoreData {
     userListStreamCtrl.add(remoteUsersList);
   }
 
-  void setRoom(String roomID) {
-    debugPrint("[core] set room $roomID}");
+  void setRoom(
+    String roomID, {
+    bool markAsLargeRoom = false,
+  }) {
+    debugPrint(
+        "[core] set room:\"$roomID\", markAsLargeRoom:$markAsLargeRoom}");
 
     room.id = roomID;
+    room.markAsLargeRoom = markAsLargeRoom;
   }
 
   Future<void> startPreview() async {
@@ -302,7 +314,7 @@ class ZegoUIKitCoreData {
       List<ZegoStream> streamList, Map<String, dynamic> extendedData) async {
     debugPrint(
         "[core] onRoomStreamUpdate, roomID:$roomID, update type:$updateType"
-        ", stream list:${streamList.map((e) => "stream id:${e.streamID}, user id:${e.user.userID}")},"
+        ", stream list:${streamList.map((e) => "stream id:${e.streamID}, extra info${e.extraInfo}, user id:${e.user.userID}")},"
         " extended data:$extendedData");
 
     if (updateType == ZegoUpdateType.Add) {
@@ -327,6 +339,8 @@ class ZegoUIKitCoreData {
           await startPlayingStream(stream.streamID, stream.user.userID);
         }
       }
+
+      onRoomStreamExtraInfoUpdate(roomID, streamList);
     } else {
       for (final stream in streamList) {
         stopPlayingStream(stream.streamID);
@@ -334,6 +348,42 @@ class ZegoUIKitCoreData {
     }
 
     audioVideoListStreamCtrl.add(getAudioVideoList());
+  }
+
+  void onRoomStreamExtraInfoUpdate(String roomID, List<ZegoStream> streamList) {
+    /*
+    * {
+    * "isCameraOn": true,
+    * "isMicrophoneOn": true,
+    * "hasAudio": true,
+    * "hasVideo": true,
+    * }
+    * */
+
+    debugPrint(
+        "[core] onRoomStreamExtraInfoUpdate, roomID:$roomID, stream list:${streamList.map((e) => "stream id:${e.streamID}, extra info${e.extraInfo}, user id:${e.user.userID}")}");
+    for (var stream in streamList) {
+      if (stream.extraInfo.isEmpty) {
+        debugPrint("[core] onRoomStreamExtraInfoUpdate extra info is empty");
+        continue;
+      }
+
+      var extraInfos = jsonDecode(stream.extraInfo) as Map<String, dynamic>;
+      if (extraInfos.containsKey(streamExtraInfoCameraKey)) {
+        onRemoteCameraStateUpdate(
+            stream.streamID,
+            extraInfos[streamExtraInfoCameraKey]!
+                ? ZegoRemoteDeviceState.Open
+                : ZegoRemoteDeviceState.Mute);
+      }
+      if (extraInfos.containsKey(streamExtraInfoMicrophoneKey)) {
+        onRemoteMicStateUpdate(
+            stream.streamID,
+            extraInfos[streamExtraInfoMicrophoneKey]!
+                ? ZegoRemoteDeviceState.Open
+                : ZegoRemoteDeviceState.Mute);
+      }
+    }
   }
 
   List<ZegoUIKitCoreUser> getAudioVideoList() {
@@ -352,8 +402,9 @@ class ZegoUIKitCoreData {
 
   void onRoomUserUpdate(
       String roomID, ZegoUpdateType updateType, List<ZegoUser> userList) {
-    debugPrint("onRoomUserUpdate, room id:$roomID, update type:$updateType"
-        "user list:${userList.map((user) => "${user.userID}:${user.userName}, ")}");
+    debugPrint(
+        "[core] onRoomUserUpdate, room id:\"$roomID\", update type:$updateType"
+        "user list:${userList.map((user) => "\"${user.userID}\":${user.userName}, ")}");
 
     if (updateType == ZegoUpdateType.Add) {
       for (final _user in userList) {
@@ -364,6 +415,12 @@ class ZegoUIKitCoreData {
         }
 
         remoteUsersList.add(ZegoUIKitCoreUser.fromZego(_user));
+      }
+
+      if (remoteUsersList.length >= 499) {
+        /// turn to be a large room after more than 500 people, even if less than 500 people behind
+        debugPrint("[core] users is more than 500, turn to be a large room");
+        room.isLargeRoom = true;
       }
 
       userJoinStreamCtrl.add(
@@ -381,28 +438,36 @@ class ZegoUIKitCoreData {
     userListStreamCtrl.add(allUserList);
   }
 
+  void onPublisherStateUpdate(String streamID, ZegoPublisherState state,
+      int errorCode, Map<String, dynamic> extendedData) {
+    debugPrint(
+        "[core] onPublisherStateUpdate, stream id:$streamID, state:$state, errorCode:$errorCode, extendedData:$extendedData");
+  }
+
+  void onPlayerStateUpdate(String streamID, ZegoPlayerState state,
+      int errorCode, Map<String, dynamic> extendedData) {
+    debugPrint(
+        "[core] onPlayerStateUpdate, stream id:$streamID, state:$state, errorCode:$errorCode, extendedData:$extendedData");
+  }
+
   void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state) {
     var targetUserIndex =
         remoteUsersList.indexWhere((user) => streamDic[streamID]! == user.id);
     if (-1 == targetUserIndex) {
       debugPrint(
-          "onRemoteCameraStateUpdate, stream user $streamID is not exist");
+          "[core] onRemoteCameraStateUpdate, stream user $streamID is not exist");
       return;
     }
 
     ZegoUIKitCoreUser targetUser = remoteUsersList[targetUserIndex];
     debugPrint(
-        "onRemoteCameraStateUpdate, stream id:$streamID, user:${targetUser.toString()}, state:$state");
+        "[core] onRemoteCameraStateUpdate, stream id:$streamID, user:${targetUser.toString()}, state:$state");
     switch (state) {
       case ZegoRemoteDeviceState.Open:
         targetUser.camera.value = true;
         break;
       case ZegoRemoteDeviceState.NoAuthorization:
         targetUser.camera.value = true;
-        break;
-      case ZegoRemoteDeviceState.Disable:
-      case ZegoRemoteDeviceState.Mute:
-        targetUser.camera.value = false;
         break;
       default:
         targetUser.camera.value = false;
@@ -419,8 +484,13 @@ class ZegoUIKitCoreData {
     }
 
     ZegoUIKitCoreUser targetUser = remoteUsersList[targetUserIndex];
+    debugPrint(
+        "[core] onRemoteMicStateUpdate, stream id:$streamID, user:${targetUser.toString()}, state:$state");
     switch (state) {
       case ZegoRemoteDeviceState.Open:
+        targetUser.microphone.value = true;
+        break;
+      case ZegoRemoteDeviceState.NoAuthorization:
         targetUser.microphone.value = true;
         break;
       default:
@@ -466,7 +536,8 @@ class ZegoUIKitCoreData {
     }
 
     ZegoUIKitCoreUser targetUser = remoteUsersList[targetUserIndex];
-    log("[core] onPlayerVideoSizeChanged streamID: $streamID width: $width height: $height");
+    debugPrint(
+        "[core] onPlayerVideoSizeChanged streamID: $streamID width: $width height: $height");
     Size size = Size(width.toDouble(), height.toDouble());
     if (targetUser.viewSize.value != size) {
       targetUser.viewSize.value = size;
@@ -475,9 +546,16 @@ class ZegoUIKitCoreData {
 
   void onRoomStateChanged(String roomID, ZegoRoomStateChangedReason reason,
       int errorCode, Map<String, dynamic> extendedData) {
-    log("[core] onRoomStateChanged roomID: $roomID, reason: $reason, errorCode: $errorCode, extendedData: $extendedData");
+    debugPrint(
+        "[core] onRoomStateChanged roomID: $roomID, reason: $reason, errorCode: $errorCode, extendedData: $extendedData");
 
     room.state.value = ZegoUIKitRoomState(reason, errorCode, extendedData);
+
+    if (reason == ZegoRoomStateChangedReason.KickOut) {
+      debugPrint("[core] local user had been kick out by room state changed");
+
+      meRemovedFromRoomStreamCtrl.add("");
+    }
   }
 
   void onRoomExtraInfoUpdate(
@@ -485,7 +563,8 @@ class ZegoUIKitCoreData {
     var roomExtraInfoString = roomExtraInfoList.map((info) =>
         "key:${info.key}, value:${info.value}"
         " update user:${info.updateUser.userID},${info.updateUser.userName}, update time:${info.updateTime}");
-    log("[core] onRoomExtraInfoUpdate roomID: $roomID,roomExtraInfoList: $roomExtraInfoString");
+    debugPrint(
+        "[core] onRoomExtraInfoUpdate roomID: $roomID,roomExtraInfoList: $roomExtraInfoString");
 
     for (var extraInfo in roomExtraInfoList) {
       if (extraInfo.key == "extra_info") {
@@ -534,7 +613,13 @@ class ZegoUIKitCoreData {
   }
 
   void onIMRecvCustomCommand(String roomID, ZegoUser fromUser, String command) {
-    // var dict = jsonDecode(command) as Map<String, dynamic>;
+    debugPrint(
+        "[core] onIMRecvCustomCommand roomID: $roomID, reason: ${fromUser.userID} ${fromUser.userName}, command:$command");
+
+    customCommandReceivedStreamCtrl.add(ZegoInRoomCommandReceivedData(
+      fromUser: ZegoUIKitUser.fromZego(fromUser),
+      command: command,
+    ));
   }
 
   void onNetworkModeChanged(ZegoNetworkMode mode) {

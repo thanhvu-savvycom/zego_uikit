@@ -4,6 +4,8 @@ mixin ZegoUIKitCoreEvent {
   void uninitEventHandle() {
     ZegoExpressEngine.onRoomStreamUpdate = null;
     ZegoExpressEngine.onRoomUserUpdate = null;
+    ZegoExpressEngine.onPublisherStateUpdate = null;
+    ZegoExpressEngine.onPlayerStateUpdate = null;
     ZegoExpressEngine.onRemoteCameraStateUpdate = null;
     ZegoExpressEngine.onRemoteMicStateUpdate = null;
     ZegoExpressEngine.onRemoteSoundLevelUpdate = null;
@@ -19,9 +21,16 @@ mixin ZegoUIKitCoreEvent {
   void initEventHandle() {
     ZegoExpressEngine.onRoomStreamUpdate =
         ZegoUIKitCore.shared.coreData.onRoomStreamUpdate;
+    ZegoExpressEngine.onRoomStreamExtraInfoUpdate =
+        ZegoUIKitCore.shared.coreData.onRoomStreamExtraInfoUpdate;
 
     ZegoExpressEngine.onRoomUserUpdate =
         ZegoUIKitCore.shared.coreData.onRoomUserUpdate;
+
+    ZegoExpressEngine.onPublisherStateUpdate =
+        ZegoUIKitCore.shared.coreData.onPublisherStateUpdate;
+    ZegoExpressEngine.onPlayerStateUpdate =
+        ZegoUIKitCore.shared.coreData.onPlayerStateUpdate;
 
     ZegoExpressEngine.onRemoteCameraStateUpdate =
         ZegoUIKitCore.shared.coreData.onRemoteCameraStateUpdate;

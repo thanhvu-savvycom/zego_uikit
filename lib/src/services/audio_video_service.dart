@@ -1,30 +1,47 @@
 part of 'uikit_service.dart';
 
 mixin ZegoAudioVideoService {
+  /// start play all audio video
   void startPlayAllAudioVideo() {
     ZegoUIKitCore.shared.startPlayAllAudioVideo();
   }
 
+  /// stop play all audio video
   void stopPlayAllAudioVideo() {
     ZegoUIKitCore.shared.stopPlayAllAudioVideo();
   }
 
+  /// set audio output to speaker
   void setAudioOutputToSpeaker(bool isSpeaker) {
     ZegoUIKitCore.shared.setAudioOutputToSpeaker(isSpeaker);
   }
 
+  /// turn on/off camera
   void turnCameraOn(bool isOn, {String? userID}) {
-    ZegoUIKitCore.shared.turnCameraOn(isOn);
+    ZegoUIKitCore.shared.turnCameraOn(
+      userID?.isEmpty ?? true
+          ? ZegoUIKitCore.shared.coreData.localUser.id
+          : userID!,
+      isOn,
+    );
   }
 
-  void turnMicrophoneOn(bool enable, {String? userID}) {
-    ZegoUIKitCore.shared.turnMicrophoneOn(enable);
+  /// turn on/off microphone
+  void turnMicrophoneOn(bool isOn, {String? userID}) {
+    ZegoUIKitCore.shared.turnMicrophoneOn(
+      userID?.isEmpty ?? true
+          ? ZegoUIKitCore.shared.coreData.localUser.id
+          : userID!,
+      isOn,
+    );
   }
 
+  /// local use front facing camera
   void useFrontFacingCamera(bool isFrontFacing) {
     ZegoUIKitCore.shared.useFrontFacingCamera(isFrontFacing);
   }
 
+  /// set video mirror mode
   void setVideoMirrorMode(bool isVideoMirror) {
     ZegoUIKitCore.shared.setVideoMirrorMode(isVideoMirror);
   }
@@ -33,6 +50,7 @@ mixin ZegoAudioVideoService {
 
   void setVideoConfig() {}
 
+  /// get audio video view notifier
   ValueNotifier<Widget?> getAudioVideoViewNotifier(String? userID) {
     if (userID == null ||
         userID == ZegoUIKitCore.shared.coreData.localUser.id) {
@@ -45,6 +63,7 @@ mixin ZegoAudioVideoService {
     }
   }
 
+  /// get camera state notifier
   ValueNotifier<bool> getCameraStateNotifier(String userID) {
     if (userID == ZegoUIKitCore.shared.coreData.localUser.id) {
       return ZegoUIKitCore.shared.coreData.localUser.camera;
@@ -56,6 +75,7 @@ mixin ZegoAudioVideoService {
     }
   }
 
+  /// get front facing camera switch notifier
   ValueNotifier<bool> getUseFrontFacingCameraStateNotifier(String userID) {
     if (userID == ZegoUIKitCore.shared.coreData.localUser.id) {
       return ZegoUIKitCore.shared.coreData.localUser.isFrontFacing;
@@ -67,6 +87,7 @@ mixin ZegoAudioVideoService {
     }
   }
 
+  /// get microphone state notifier
   ValueNotifier<bool> getMicrophoneStateNotifier(String userID) {
     if (userID == ZegoUIKitCore.shared.coreData.localUser.id) {
       return ZegoUIKitCore.shared.coreData.localUser.microphone;
@@ -78,6 +99,7 @@ mixin ZegoAudioVideoService {
     }
   }
 
+  /// get audio output device notifier
   ValueNotifier<ZegoAudioRoute> getAudioOutputDeviceNotifier(String userID) {
     if (userID == ZegoUIKitCore.shared.coreData.localUser.id) {
       return ZegoUIKitCore.shared.coreData.localUser.audioRoute;
@@ -89,6 +111,7 @@ mixin ZegoAudioVideoService {
     }
   }
 
+  /// get sound level notifier
   Stream<double> getSoundLevelStream(String userID) {
     if (userID == ZegoUIKitCore.shared.coreData.localUser.id) {
       return ZegoUIKitCore.shared.coreData.localUser.soundLevel.stream;
@@ -101,6 +124,7 @@ mixin ZegoAudioVideoService {
     }
   }
 
+  /// get audio video list
   List<ZegoUIKitUser> getAudioVideoList() {
     return ZegoUIKitCore.shared.coreData
         .getAudioVideoList()
@@ -113,6 +137,7 @@ mixin ZegoAudioVideoService {
         .map((users) => users.map((e) => e.toZegoUikitUser()).toList());
   }
 
+  /// get video size notifier
   ValueNotifier<Size> getVideoSizeNotifier(String userID) {
     if (userID == ZegoUIKitCore.shared.coreData.localUser.id) {
       return ZegoUIKitCore.shared.coreData.localUser.viewSize;
@@ -124,18 +149,22 @@ mixin ZegoAudioVideoService {
     }
   }
 
+  /// update texture render size
   void updateTextureRendererSize(String? userID, int width, int height) {
     ZegoUIKitCore.shared.updateTextureRendererSize(userID, width, height);
   }
 
+  /// update texture render orientation
   void updateTextureRendererOrientation(Orientation orientation) {
     ZegoUIKitCore.shared.updateTextureRendererOrientation(orientation);
   }
 
+  /// update app orientation
   void updateAppOrientation(DeviceOrientation orientation) {
     ZegoUIKitCore.shared.updateAppOrientation(orientation);
   }
 
+  /// update video view mode
   void updateVideoViewMode(bool useVideoViewAspectFill) {
     ZegoUIKitCore.shared.updateVideoViewMode(useVideoViewAspectFill);
   }

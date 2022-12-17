@@ -41,8 +41,8 @@ class ZegoLeaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size containerSize = buttonSize ?? Size(56.r, 56.r);
-    Size sizeBoxSize = iconSize ?? Size(24.r, 24.r);
+    Size containerSize = buttonSize ?? Size(96.r, 96.r);
+    Size sizeBoxSize = iconSize ?? Size(56.r, 56.r);
     return GestureDetector(
       onTap: () async {
         ///  if there is a user-defined event before the click,
@@ -55,10 +55,10 @@ class ZegoLeaveButton extends StatelessWidget {
       child: Container(
         width: containerSize.width,
         height: containerSize.height,
-        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
-          color: icon?.backgroundColor ?? controlBarButtonCheckedBackgroundColor,
-            borderRadius: BorderRadius.circular(12.r),
+          color: icon?.backgroundColor ?? Colors.red,
+          borderRadius: BorderRadius.all(Radius.circular(
+              math.min(containerSize.width, containerSize.height) / 2)),
         ),
         child: SizedBox.fromSize(
           size: sizeBoxSize,

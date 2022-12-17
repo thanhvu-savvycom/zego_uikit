@@ -1,6 +1,5 @@
 export 'draggable_bottom_sheet.dart';
 export 'value_notifier_icon.dart';
-export 'ripple_animation.dart';
 export 'text_icon_button.dart';
 export 'dialogs.dart';
 export 'more_button.dart';

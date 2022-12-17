@@ -4,12 +4,9 @@ enum ZegoUIKitPluginType {
   whiteboard, // superboard
 }
 
-enum PluginConnectionState {
-  disconnected,
-  connecting,
-  connected,
-  reconnecting,
-}
+enum PluginConnectionState { disconnected, connecting, connected, reconnecting }
+
+enum PluginRoomState { disconnected, connecting, connected }
 
 abstract class IZegoUIKitPlugin {
   ZegoUIKitPluginType getPluginType();

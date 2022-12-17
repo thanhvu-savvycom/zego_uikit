@@ -4,6 +4,7 @@ import 'package:zego_express_engine/zego_express_engine.dart';
 class ZegoUIKitUser {
   String id = '';
   String name = '';
+  Map<String, String> inRoomAttributes = {};
 
   ZegoUIKitUser.empty();
 
@@ -11,7 +12,11 @@ class ZegoUIKitUser {
     return id.isEmpty || name.isEmpty;
   }
 
-  ZegoUIKitUser({required this.id, required this.name});
+  ZegoUIKitUser({
+    required this.id,
+    required this.name,
+    this.inRoomAttributes = const {},
+  });
 
   // internal helper function
   ZegoUser toZegoUser() => ZegoUser(id, name);
@@ -21,6 +26,6 @@ class ZegoUIKitUser {
 
   @override
   String toString() {
-    return "id:$id, name:$name";
+    return "id:$id, name:$name, in-room attributes:$inRoomAttributes";
   }
 }

@@ -1,14 +1,17 @@
 part of 'uikit_service.dart';
 
 mixin ZegoEffectService {
+  /// enable beauty
   Future<void> enableBeauty(bool isOn) async {
     ZegoUIKitCore.shared.enableBeauty(isOn);
   }
 
+  /// start effects env
   Future<void> startEffectsEnv() async {
     ZegoUIKitCore.shared.startEffectsEnv();
   }
 
+  /// stop effects env
   Future<void> stopEffectsEnv() async {
     ZegoUIKitCore.shared.stopEffectsEnv();
   }
@@ -48,6 +51,7 @@ mixin ZegoEffectService {
         .setEffectsBeautyParam(ZegoUIKitCore.shared.coreData.beautyParam);
   }
 
+  /// get beauty value
   ZegoEffectsBeautyParam getBeautyValue() {
     return ZegoUIKitCore.shared.coreData.beautyParam;
   }
@@ -74,12 +78,14 @@ mixin ZegoEffectService {
     ZegoExpressEngine.instance.setReverbPreset(reverbPreset);
   }
 
+  /// reset sound effect
   Future<void> resetSoundEffect() async {
     await ZegoExpressEngine.instance.setReverbPreset(ZegoReverbPreset.None);
     await ZegoExpressEngine.instance
         .setVoiceChangerPreset(ZegoVoiceChangerPreset.None);
   }
 
+  /// reset beauty effect
   Future<void> resetBeautyEffect() async {
     ZegoUIKitCore.shared.coreData.beautyParam =
         ZegoEffectsBeautyParam.defaultParam();

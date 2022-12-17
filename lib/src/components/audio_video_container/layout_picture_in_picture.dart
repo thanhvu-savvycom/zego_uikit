@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:zego_uikit/src/components/audio_video/audio_video_view.dart';
+import 'package:zego_uikit/src/components/defines.dart';
 import 'package:zego_uikit/src/services/services.dart';
 import 'layout.dart';
 import 'picture_in_picture/defines.dart';
@@ -46,6 +47,7 @@ class ZegoLayoutPictureInPicture extends StatefulWidget {
     required this.layoutConfig,
     this.foregroundBuilder,
     this.backgroundBuilder,
+    this.avatarConfig,
   }) : super(key: key);
 
   final List<ZegoUIKitUser> userList;
@@ -53,6 +55,9 @@ class ZegoLayoutPictureInPicture extends StatefulWidget {
 
   final ZegoAudioVideoViewForegroundBuilder? foregroundBuilder;
   final ZegoAudioVideoViewBackgroundBuilder? backgroundBuilder;
+
+  /// avatar etc.
+  final ZegoAvatarConfig? avatarConfig;
 
   @override
   State<ZegoLayoutPictureInPicture> createState() =>
@@ -91,11 +96,14 @@ class _ZegoLayoutPictureInPictureState
       children: [
         largeViewUser == null
             ? Container()
-            : ZegoAudioVideoView(
-                user: largeViewUser,
-                backgroundBuilder: widget.backgroundBuilder,
-                foregroundBuilder: widget.foregroundBuilder,
-              ),
+            : LayoutBuilder(builder: (context, constraints) {
+                return ZegoAudioVideoView(
+                  user: largeViewUser,
+                  backgroundBuilder: widget.backgroundBuilder,
+                  foregroundBuilder: widget.foregroundBuilder,
+                  avatarConfig: widget.avatarConfig,
+                );
+              }),
         smallViewUser == null
             ? Container()
             : ZegoLayoutPIPSmallItem(
@@ -130,11 +138,14 @@ class _ZegoLayoutPictureInPictureState
 
     return Stack(
       children: [
-        ZegoAudioVideoView(
-          user: largeViewUser,
-          backgroundBuilder: widget.backgroundBuilder,
-          foregroundBuilder: widget.foregroundBuilder,
-        ),
+        LayoutBuilder(builder: (context, constraints) {
+          return ZegoAudioVideoView(
+            user: largeViewUser,
+            backgroundBuilder: widget.backgroundBuilder,
+            foregroundBuilder: widget.foregroundBuilder,
+            avatarConfig: widget.avatarConfig,
+          );
+        }),
         ZegoLayoutPIPSmallItemList(
           targetUsers: smallViewList,
           defaultPosition: widget.layoutConfig.smallViewPosition,
