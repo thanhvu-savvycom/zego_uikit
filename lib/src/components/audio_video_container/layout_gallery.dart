@@ -69,18 +69,15 @@ class _ZegoLayoutGalleryState extends State<ZegoLayoutGallery> {
     }
 
     var layoutItems = layoutUsers.map((user) {
-      var audioVideoView = LayoutBuilder(builder: (context, constraints) {
-        return ZegoAudioVideoView(
-          user: user,
-          backgroundBuilder: widget.backgroundBuilder,
-          foregroundBuilder: widget.foregroundBuilder,
-          borderRadius: widget.layoutConfig.addBorderRadiusAndSpacingBetweenView
-              ? 18.0.w
-              : null,
-          borderColor: Colors.transparent,
-          avatarConfig: widget.avatarConfig,
-        );
-      });
+      var audioVideoView = ZegoAudioVideoView(
+        user: user,
+        backgroundBuilder: widget.backgroundBuilder,
+        foregroundBuilder: widget.foregroundBuilder,
+        borderRadius: widget.layoutConfig.addBorderRadiusAndSpacingBetweenView
+            ? 18.0.w
+            : null,
+        borderColor: Colors.transparent,
+      );
       return LayoutId(
         id: user.id,
         child: audioVideoView,

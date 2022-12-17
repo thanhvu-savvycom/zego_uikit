@@ -44,12 +44,10 @@ class ZegoRefuseInvitationButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ZegoRefuseInvitationButton> createState() =>
-      _ZegoRefuseInvitationButtonState();
+  State<ZegoRefuseInvitationButton> createState() => _ZegoRefuseInvitationButtonState();
 }
 
-class _ZegoRefuseInvitationButtonState
-    extends State<ZegoRefuseInvitationButton> {
+class _ZegoRefuseInvitationButtonState extends State<ZegoRefuseInvitationButton> {
   @override
   Widget build(BuildContext context) {
     return ZegoTextIconButton(
@@ -59,7 +57,6 @@ class _ZegoRefuseInvitationButtonState
       icon: widget.icon,
       iconTextSpacing: widget.iconTextSpacing,
       iconSize: widget.iconSize,
-      buttonSize: widget.buttonSize,
       verticalLayout: widget.verticalLayout,
       clickableTextColor: widget.clickableTextColor ?? Colors.white,
       unclickableTextColor: widget.unclickableTextColor,
@@ -69,9 +66,7 @@ class _ZegoRefuseInvitationButtonState
   }
 
   void onPressed() async {
-    var result = await ZegoUIKit()
-        .getSignalingPlugin()
-        .refuseInvitation(widget.inviterID, widget.data ?? '');
+    var result = await ZegoUIKit().getSignalingPlugin().refuseInvitation(widget.inviterID, widget.data ?? '');
 
     if (widget.onPressed != null) {
       widget.onPressed!(result.code, result.message);

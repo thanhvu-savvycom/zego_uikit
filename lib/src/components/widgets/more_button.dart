@@ -47,18 +47,18 @@ class ZegoMoreButton extends StatefulWidget {
 class _ZegoMoreButtonState extends State<ZegoMoreButton> {
   @override
   Widget build(BuildContext context) {
-    // Size containerSize = widget.buttonSize ?? Size(96.r, 96.r);
-    Size sizeBoxSize = widget.iconSize ?? Size(56.r, 56.r);
+    // Size containerSize = widget.buttonSize ?? Size(56.r, 56.r);
+    Size sizeBoxSize = widget.iconSize ?? Size(24.r, 24.r);
 
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 96.r,
-        height: 96.r,
+        width: 56.r,
+        height: 56.r,
         decoration: BoxDecoration(
           color: widget.icon?.backgroundColor ??
               controlBarButtonCheckedBackgroundColor,
-          shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(12.r)
         ),
         child: SizedBox.fromSize(
           size: sizeBoxSize,

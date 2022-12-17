@@ -56,8 +56,8 @@ class _ZegoToggleMicrophoneButtonState
 
   @override
   Widget build(BuildContext context) {
-    Size containerSize = widget.buttonSize ?? Size(96.r, 96.r);
-    Size sizeBoxSize = widget.iconSize ?? Size(56.r, 56.r);
+    Size containerSize = widget.buttonSize ?? Size(56.r, 56.r);
+    Size sizeBoxSize = widget.iconSize ?? Size(24.r, 24.r);
 
     /// listen local microphone state changes
     return ValueListenableBuilder<bool>(
@@ -70,13 +70,14 @@ class _ZegoToggleMicrophoneButtonState
           child: Container(
             width: containerSize.width,
             height: containerSize.height,
+            padding: EdgeInsets.all(16.r),
             decoration: BoxDecoration(
               color: isMicrophoneOn
                   ? widget.normalIcon?.backgroundColor ??
-                      controlBarButtonCheckedBackgroundColor
+                  controlBarButtonCheckedBackgroundColor
                   : widget.offIcon?.backgroundColor ??
-                      controlBarButtonBackgroundColor,
-              shape: BoxShape.circle,
+                  controlBarButtonCheckedBackgroundColor,
+                borderRadius: BorderRadius.circular(12.r)
             ),
             child: SizedBox.fromSize(
               size: sizeBoxSize,

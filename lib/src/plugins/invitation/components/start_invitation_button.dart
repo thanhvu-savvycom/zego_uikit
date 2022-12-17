@@ -53,8 +53,7 @@ class ZegoStartInvitationButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ZegoStartInvitationButton> createState() =>
-      _ZegoStartInvitationButtonState();
+  State<ZegoStartInvitationButton> createState() => _ZegoStartInvitationButtonState();
 }
 
 class _ZegoStartInvitationButtonState extends State<ZegoStartInvitationButton> {
@@ -67,8 +66,6 @@ class _ZegoStartInvitationButtonState extends State<ZegoStartInvitationButton> {
       icon: widget.icon,
       iconTextSpacing: widget.iconTextSpacing,
       iconSize: widget.iconSize,
-      buttonRadius: widget.buttonSize?.width ?? 0 / 2,
-      buttonSize: widget.buttonSize,
       verticalLayout: widget.verticalLayout,
       clickableTextColor: widget.clickableTextColor,
       unclickableTextColor: widget.unclickableTextColor,
@@ -92,8 +89,7 @@ class _ZegoStartInvitationButtonState extends State<ZegoStartInvitationButton> {
         );
 
     if (widget.onPressed != null) {
-      widget.onPressed!(
-          result.code, result.message, result.result as List<String>);
+      widget.onPressed!(result.code, result.message, result.result as List<String>);
     }
   }
 }
