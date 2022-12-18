@@ -98,17 +98,18 @@ class _ZegoSwitchAudioOutputButtonState
           controlBarButtonBackgroundColor;
     }
 
-    Size containerSize = widget.buttonSize ?? Size(96.r, 96.r);
-    Size sizeBoxSize = widget.iconSize ?? Size(56.r, 56.r);
+    Size containerSize = widget.buttonSize ?? Size(56.r, 56.r);
+    Size sizeBoxSize = widget.iconSize ?? Size(24.r, 24.r);
 
     return GestureDetector(
       onTap: onPressed,
       child: Container(
         width: containerSize.width,
         height: containerSize.height,
+        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
           color: backgroundColor,
-          shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(12.r)
         ),
         child: SizedBox.fromSize(
           size: sizeBoxSize,
