@@ -68,12 +68,18 @@ class _ZegoAcceptInvitationButtonState
   }
 
   void onPressed() async {
-    var result = await ZegoUIKit()
-        .getSignalingPlugin()
-        .acceptInvitation(widget.inviterID, '');
+    ZegoUIKitSignalingPluginImpl? signalingPlugin;
+    try {
+      signalingPlugin = ZegoUIKit()
+          .getSignalingPlugin();
+    } catch(e) {
+      print(e.toString());
+    }
+    var result = await signalingPlugin?.acceptInvitation(widget.inviterID, '');
 
     if (widget.onPressed != null) {
-      widget.onPressed!(result.code, result.message);
+      widget.onPressed!(
+          result?.code ?? "", result?.message ?? "");
     }
   }
 }

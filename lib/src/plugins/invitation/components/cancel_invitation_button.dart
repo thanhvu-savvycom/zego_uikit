@@ -66,13 +66,18 @@ class _ZegoCancelInvitationButtonState
   }
 
   void onPressed() async {
-    var result =  await ZegoUIKit()
-        .getSignalingPlugin()
-        .cancelInvitation(widget.invitees, '');
+    ZegoUIKitSignalingPluginImpl? signalingPlugin;
+    try {
+      signalingPlugin = ZegoUIKit()
+          .getSignalingPlugin();
+    } catch(e) {
+      print(e.toString());
+    }
+    var result = await signalingPlugin?.cancelInvitation(widget.invitees, '');
 
     if (widget.onPressed != null) {
       widget.onPressed!(
-          result.code, result.message, result.result as List<String>);
+          result?.code ?? "", result?.message ?? "", result?.result as List<String>? ?? []);
     }
   }
 }
