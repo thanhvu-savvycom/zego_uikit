@@ -64,8 +64,7 @@ class ZegoLayoutPictureInPicture extends StatefulWidget {
       _ZegoLayoutPictureInPictureState();
 }
 
-class _ZegoLayoutPictureInPictureState
-    extends State<ZegoLayoutPictureInPicture> {
+class _ZegoLayoutPictureInPictureState extends State<ZegoLayoutPictureInPicture> {
   late ZegoViewPosition currentPosition;
 
   @override
@@ -88,46 +87,47 @@ class _ZegoLayoutPictureInPictureState
     var localUser = ZegoUIKit().getLocalUser();
 
     ZegoUIKitUser? largeViewUser =
-        widget.userList.isNotEmpty ? widget.userList[0] : null;
+    widget.userList.isNotEmpty ? widget.userList[0] : null;
     ZegoUIKitUser? smallViewUser =
-        widget.userList.length > 1 ? widget.userList[1] : null;
+    widget.userList.length > 1 ? widget.userList[1] : null;
 
     return Stack(
       children: [
         largeViewUser == null
             ? Container()
             : LayoutBuilder(builder: (context, constraints) {
-                return ZegoAudioVideoView(
-                  user: largeViewUser,
-                  backgroundBuilder: widget.backgroundBuilder,
-                  foregroundBuilder: widget.foregroundBuilder,
-                  avatarConfig: widget.avatarConfig,
-                );
-              }),
+          return ZegoAudioVideoView(
+            user: largeViewUser,
+            backgroundBuilder: widget.backgroundBuilder,
+            foregroundBuilder: widget.foregroundBuilder,
+            avatarConfig: widget.avatarConfig,
+          );
+        }),
         smallViewUser == null
             ? Container()
             : ZegoLayoutPIPSmallItem(
-                targetUser: smallViewUser,
-                localUser: localUser,
-                defaultPosition: widget.layoutConfig.smallViewPosition,
-                draggable: widget.layoutConfig.isSmallViewDraggable,
-                showOnlyVideo: false,
-                onTap: (ZegoUIKitUser? user) {
-                  setState(() {
-                    if (!widget.layoutConfig.switchLargeOrSmallViewByClick) {
-                      return;
-                    }
+          targetUser: smallViewUser,
+          localUser: localUser,
+          defaultPosition: widget.layoutConfig.smallViewPosition,
+          draggable: widget.layoutConfig.isSmallViewDraggable,
+          showOnlyVideo: false,
+          onTap: (ZegoUIKitUser? user) {
+            setState(() {
+              if (!widget.layoutConfig.switchLargeOrSmallViewByClick) {
+                return;
+              }
 
-                    var firstUser = widget.userList[0];
-                    widget.userList[0] = widget.userList[1];
-                    widget.userList[1] = firstUser;
-                  });
-                },
-                size: widget.layoutConfig.smallViewSize,
-                margin: widget.layoutConfig.smallViewMargin,
-                foregroundBuilder: widget.foregroundBuilder,
-                backgroundBuilder: widget.backgroundBuilder,
-              ),
+              var firstUser = widget.userList[0];
+              widget.userList[0] = widget.userList[1];
+              widget.userList[1] = firstUser;
+            });
+          },
+          size: widget.layoutConfig.smallViewSize,
+          margin: widget.layoutConfig.smallViewMargin,
+          foregroundBuilder: widget.foregroundBuilder,
+          backgroundBuilder: widget.backgroundBuilder,
+          avatarConfig: widget.avatarConfig,
+        ),
       ],
     );
   }
@@ -167,7 +167,7 @@ class _ZegoLayoutPictureInPictureState
           size: widget.layoutConfig.smallViewSize,
           margin: widget.layoutConfig.smallViewMargin,
           spacingBetweenSmallViews:
-              widget.layoutConfig.spacingBetweenSmallViews,
+          widget.layoutConfig.spacingBetweenSmallViews,
           foregroundBuilder: widget.foregroundBuilder,
           backgroundBuilder: widget.backgroundBuilder,
         ),

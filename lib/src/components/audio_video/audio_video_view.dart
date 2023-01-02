@@ -94,7 +94,7 @@ class _ZegoAudioVideoViewState extends State<ZegoAudioVideoView> {
             builder: (context, constraints) {
               return ValueListenableBuilder<Widget?>(
                 valueListenable:
-                    ZegoUIKit().getAudioVideoViewNotifier(widget.user!.id),
+                ZegoUIKit().getAudioVideoViewNotifier(widget.user!.id),
                 builder: (context, userView, _) {
                   if (userView == null) {
                     /// hide video view when use not found
@@ -141,11 +141,11 @@ class _ZegoAudioVideoViewState extends State<ZegoAudioVideoView> {
         return Stack(
           children: [
             widget.backgroundBuilder?.call(
-                  context,
-                  Size(constraints.maxWidth, constraints.maxHeight),
-                  widget.user,
-                  widget.extraInfo,
-                ) ??
+              context,
+              Size(constraints.maxWidth, constraints.maxHeight),
+              widget.user,
+              widget.extraInfo,
+            ) ??
                 Container(color: Colors.transparent),
             Positioned(
               top: 0,
@@ -209,7 +209,7 @@ class _ZegoAudioVideoViewState extends State<ZegoAudioVideoView> {
   Widget avatar(double maxWidth, double maxHeight) {
     var screenSize = MediaQuery.of(context).size;
     var isSmallView = maxHeight < screenSize.height / 2;
-    var avatarSize = isSmallView ? Size(110.r, 110.r) : Size(258.r, 258.r);
+    var avatarSize = isSmallView ? Size(50.r, 50.r) : Size(120.r, 120.r);
 
     return Positioned(
       top: getAvatarTop(maxWidth, maxHeight, avatarSize),
@@ -222,7 +222,7 @@ class _ZegoAudioVideoViewState extends State<ZegoAudioVideoView> {
           user: widget.user,
           showAvatar: widget.avatarConfig?.showInAudioMode ?? true,
           showSoundLevel:
-              widget.avatarConfig?.showSoundWavesInAudioMode ?? true,
+          widget.avatarConfig?.showSoundWavesInAudioMode ?? true,
           avatarBuilder: widget.avatarConfig?.builder,
           soundLevelSize: widget.avatarConfig?.size,
           soundLevelColor: widget.avatarConfig?.soundWaveColor,
@@ -233,7 +233,7 @@ class _ZegoAudioVideoViewState extends State<ZegoAudioVideoView> {
 
   double getAvatarTop(double maxWidth, double maxHeight, Size avatarSize) {
     switch (
-        widget.avatarConfig?.verticalAlignment ?? ZegoAvatarAlignment.center) {
+    widget.avatarConfig?.verticalAlignment ?? ZegoAvatarAlignment.center) {
       case ZegoAvatarAlignment.center:
         return (maxHeight - avatarSize.height) / 2;
       case ZegoAvatarAlignment.start:

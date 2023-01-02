@@ -90,6 +90,7 @@ class _ZegoAudioVideoContainerState extends State<ZegoAudioVideoContainer> {
       backgroundBuilder: widget.backgroundBuilder,
       foregroundBuilder: widget.foregroundBuilder,
       userList: userList,
+      avatarConfig: widget.avatarConfig,
     );
   }
 
@@ -101,6 +102,7 @@ class _ZegoAudioVideoContainerState extends State<ZegoAudioVideoContainer> {
       foregroundBuilder: widget.foregroundBuilder,
       userList: userList,
       maxItemCount: 8,
+      avatarConfig: widget.avatarConfig,
     );
   }
 
@@ -113,7 +115,7 @@ class _ZegoAudioVideoContainerState extends State<ZegoAudioVideoContainer> {
   void updateUserList(List<ZegoUIKitUser> streamUsers) {
     /// remove if not in stream
     userList.removeWhere((user) =>
-        -1 == streamUsers.indexWhere((streamUser) => user.id == streamUser.id));
+    -1 == streamUsers.indexWhere((streamUser) => user.id == streamUser.id));
 
     /// add if stream added
     for (var streamUser in streamUsers) {

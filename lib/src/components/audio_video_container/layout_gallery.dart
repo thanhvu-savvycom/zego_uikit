@@ -77,6 +77,7 @@ class _ZegoLayoutGalleryState extends State<ZegoLayoutGallery> {
             ? 18.0.w
             : null,
         borderColor: Colors.transparent,
+        avatarConfig: widget.avatarConfig,
       );
       return LayoutId(
         id: user.id,
