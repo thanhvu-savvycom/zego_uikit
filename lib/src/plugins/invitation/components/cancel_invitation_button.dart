@@ -78,6 +78,7 @@ class _ZegoCancelInvitationButtonState
       }
     } catch(e) {
       print(e.toString());
+      widget.onPressed!("", "", []);
     }
   }
 }

@@ -80,6 +80,7 @@ class _ZegoAcceptInvitationButtonState
       }
     } catch(e) {
       print(e.toString());
+      widget.onPressed!("", "");
     }
   }
 }

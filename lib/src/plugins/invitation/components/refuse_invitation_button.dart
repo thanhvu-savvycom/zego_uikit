@@ -78,6 +78,7 @@ class _ZegoRefuseInvitationButtonState extends State<ZegoRefuseInvitationButton>
       }
     } catch(e) {
       print(e.toString());
+      widget.onPressed!("", "");
     }
   }
 }
