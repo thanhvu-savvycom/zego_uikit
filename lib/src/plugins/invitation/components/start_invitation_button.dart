@@ -84,20 +84,20 @@ class _ZegoStartInvitationButtonState extends State<ZegoStartInvitationButton> {
     try {
       signalingPlugin = ZegoUIKit()
           .getSignalingPlugin();
+      var result = await signalingPlugin?.sendInvitation(
+        ZegoUIKit().getLocalUser().name,
+        widget.invitees,
+        widget.timeoutSeconds,
+        widget.invitationType,
+        widget.data,
+      );
+
+      if (widget.onPressed != null) {
+        widget.onPressed!(
+            result?.code ?? "", result?.message ?? "", result?.result as List<String>? ?? []);
+      }
     } catch(e) {
       print(e.toString());
-    }
-    var result = await signalingPlugin?.sendInvitation(
-      ZegoUIKit().getLocalUser().name,
-      widget.invitees,
-      widget.timeoutSeconds,
-      widget.invitationType,
-      widget.data,
-    );
-
-    if (widget.onPressed != null) {
-      widget.onPressed!(
-          result?.code ?? "", result?.message ?? "", result?.result as List<String>? ?? []);
     }
   }
 }

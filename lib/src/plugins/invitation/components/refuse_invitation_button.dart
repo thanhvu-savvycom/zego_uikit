@@ -70,14 +70,14 @@ class _ZegoRefuseInvitationButtonState extends State<ZegoRefuseInvitationButton>
     try {
       signalingPlugin = ZegoUIKit()
           .getSignalingPlugin();
+      var result = await signalingPlugin?.refuseInvitation(widget.inviterID, widget.data ?? '');
+
+      if (widget.onPressed != null) {
+        widget.onPressed!(
+            result?.code ?? "", result?.message ?? "");
+      }
     } catch(e) {
       print(e.toString());
-    }
-    var result = await signalingPlugin?.refuseInvitation(widget.inviterID, widget.data ?? '');
-
-    if (widget.onPressed != null) {
-      widget.onPressed!(
-          result?.code ?? "", result?.message ?? "");
     }
   }
 }
